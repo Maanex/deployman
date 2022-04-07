@@ -1,0 +1,11 @@
+default:
+  workflowAlerts: "961376006017531984"
+rules:
+  - name: Gaming
+    match:
+      repoPath: maanex-gibu/api_pipeline
+    override:
+      workflowAlerts: "961738058103922688"
+      builds: "961737921747116062"
+webhooks:
+  "961738058103922688": 961760393171173376/egsNxQe_1qp5KHVgeACWi2mqdMyKNkCVwfnEQdWOjUHYsU3cXhnjxXx5MadQZOXiXIWQ
