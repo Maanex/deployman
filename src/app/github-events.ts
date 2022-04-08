@@ -1,5 +1,8 @@
+import Logger from "../lib/logger"
 import Webhooks from "../lib/webhooks"
+import PackageWidget from "./package-widget"
 import Rules, { RuleMatch, RuleOverride } from "./rules"
+import WorkflowWidget from "./workflow-widget"
 
 
 export type GithubEvent = {
@@ -51,6 +54,8 @@ export default class GithubEvents {
     if (!event.action) return
     if (!GithubEvents.allowedEvents.includes(event.action)) return
 
+    Logger.debug(event.action)
+
     // check_run is a single workflow job     <- we are here
     // workflow_run is an entire workflow
     if (!event.check_run && !event.registry_package) return
@@ -66,13 +71,22 @@ export default class GithubEvents {
     }
 
     const overrides = Rules.getOverrideForRule(candidate)
-    GithubEvents.actOnEvent(event, overrides)
+    try {
+      GithubEvents.actOnEvent(event, overrides)
+    } catch (ex) {
+      console.error(ex)
+    }
   }
 
   private static actOnEvent(event: GithubEvent, overrides: RuleOverride) {
     switch (event.action) {
       case 'created':
-        Webhooks.sendDataToChannel(overrides.workflowAlerts, { content: 'GAMING!!!!!!!!' })
+      case 'completed':
+        WorkflowWidget.createOrUpdateWidget(overrides.workflowAlerts, event)
+        break;
+      case 'published':
+        PackageWidget.createWidget(overrides.builds, event)
+        break;
     }
   }
 

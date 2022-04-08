@@ -11,6 +11,11 @@ export type Webhook = {
   token: string
 }
 
+export type HookRef = {
+  mapping: string
+  message: string
+}
+
 export default class Webhooks {
 
   private static readonly API_BASE = 'https://discord.com/api/v10'
@@ -59,7 +64,7 @@ export default class Webhooks {
     return undefined
   }
 
-  private static makeRequest(method: 'GET' | 'POST', url: string, payload?: any): Promise<AxiosResponse> {
+  private static makeRequest(method: 'GET' | 'POST' | 'PATCH', url: string, payload?: any): Promise<AxiosResponse> {
     return axios({
       method,
       url,
@@ -77,20 +82,21 @@ export default class Webhooks {
    * 
    */
 
-  public static async sendDataToChannel(channel: string, data: any) {
+  public static async sendDataToChannel(channel: string, data: any): Promise<HookRef> {
     try {
-      const mapping = ProductConfig.getParsed().webhooks ?? {}
-      if (mapping[channel]) {
-        const success = await Webhooks.sendToWebhookId(mapping[channel], data)
-        if (success) return
+      const mappings = ProductConfig.getParsed().webhooks ?? {}
+      if (mappings[channel]) {
+        const message = await Webhooks.sendToWebhookId(mappings[channel], data)
+        if (message) return { mapping: mappings[channel], message }
       }
 
       const hooks = await Webhooks.fetchWebhooks(channel)
       if (hooks?.length) {
         Webhooks.writeMapping(channel, hooks[0])
 
-        const success = await Webhooks.sendToWebhookId(`${hooks[0].id}/${hooks[0].token}`, data)
-        if (success) return
+        const mapping = `${hooks[0].id}/${hooks[0].token}`
+        const message = await Webhooks.sendToWebhookId(mapping, data)
+        if (message) return { mapping, message }
       }
 
       const hook = await Webhooks.createWebhook(channel)
@@ -98,17 +104,26 @@ export default class Webhooks {
 
       Webhooks.writeMapping(channel, hook)
 
-      const success = await Webhooks.sendToWebhookId(`${hook.id}/${hook.token}`, data)
-      if (success) return
+      const mapping = `${hook.id}/${hook.token}`
+      const message = await Webhooks.sendToWebhookId(mapping, data)
+      if (message) return { mapping, message }
     } catch (ex) {
       console.error(ex)
+      return null
     }
   }
 
-  private static async sendToWebhookId(id: string, data: any): Promise<boolean> {
-    const res = await Webhooks.makeRequest('POST', `/webhooks/${id}`, data)
-    if (res.status >= 200 && res.status <= 299) return true
-    if (res.status === 404) return false
+  public static async editSentWebhook(hook: HookRef, data: any): Promise<string> {
+    const res = await Webhooks.makeRequest('PATCH', `/webhooks/${hook.mapping}/messages/${hook.message}`, data)
+    if (res.status >= 200 && res.status <= 299) return res.data?.id ?? ''
+    if (res.status === 404) return ''
+    throw new Error(`Webhook failed. Http ${res.status}: ${res.statusText}`)
+  }
+
+  private static async sendToWebhookId(id: string, data: any): Promise<string> {
+    const res = await Webhooks.makeRequest('POST', `/webhooks/${id}?wait=true`, data)
+    if (res.status >= 200 && res.status <= 299) return res.data?.id ?? ''
+    if (res.status === 404) return ''
     throw new Error(`Webhook failed. Http ${res.status}: ${res.statusText}`)
   }
 
