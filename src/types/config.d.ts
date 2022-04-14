@@ -6,6 +6,7 @@ export type configjs = {
   discordPublicKey: string
   discordBotToken: string
   productConfigPath: string
+  registryAuth: string
   webhookDefaultName: string
   webhookDefaultAvatar: string
 }
