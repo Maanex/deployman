@@ -8,7 +8,6 @@ COPY package*.json ./
 RUN yarn install --production
 
 COPY . .
-COPY config.docker.js config.js
 
 RUN yarn build
 
