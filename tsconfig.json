@@ -2,10 +2,10 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es2020",
+    "target": "es2021",
     "outDir": "dist",
     "lib": [
-      "es6",
+      "es2021",
       "dom"
     ],
     "sourceMap": true,

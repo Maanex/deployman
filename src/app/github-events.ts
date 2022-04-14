@@ -85,7 +85,7 @@ export default class GithubEvents {
         WorkflowWidget.createOrUpdateWidget(overrides.workflowAlerts, event)
         break;
       case 'published':
-        PackageWidget.createWidget(overrides.builds, event)
+        PackageWidget.createWidget(overrides.builds, event, overrides.deployService)
         break;
     }
   }

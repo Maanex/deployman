@@ -12,6 +12,7 @@ export type RuleMatch = {
 export type RuleOverride = {
   workflowAlerts?: string
   builds?: string
+  deployService?: string
 }
 
 export type Rule = {
