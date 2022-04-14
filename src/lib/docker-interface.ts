@@ -37,9 +37,10 @@ export default class DockerInterface {
     const itemId = item.ID
     const image = (item.Spec.TaskTemplate as any).ContainerSpec.Image
 
-    const auth = {
-      password: config.registryAuth || undefined
-    } as any
+    const auth = config.registryAuth ? {
+      username: config.registryAuth.split(':')[0],
+      password: config.registryAuth.split(':')[1]
+    } : {} as any
 
     // await DockerInterface.client.pull(image, {
     //   registryconfig: auth,
