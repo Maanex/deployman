@@ -11,6 +11,7 @@ async function run() {
   Logger.log('Starting...')
 
   Modules.loadProductConfig()
+  Modules.connectDockerInterface()
   Modules.initCordo()
   Modules.startServer()
 }

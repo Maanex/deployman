@@ -4,12 +4,17 @@ import express from 'express'
 import Logger from "./lib/logger"
 import ProductConfig from "./lib/productconfig"
 import { postGithubWebhook } from "./web/routes/github"
+import DockerInterface from "./lib/docker-interface"
 
 
 export default class Modules {
 
   public static loadProductConfig() {
     ProductConfig.load()
+  }
+
+  public static connectDockerInterface() {
+    DockerInterface.connect()
   }
 
   public static initCordo() {
