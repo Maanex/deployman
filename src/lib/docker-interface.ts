@@ -52,21 +52,15 @@ export default class DockerInterface {
       const image = (item.Spec.TaskTemplate as any).ContainerSpec.Image.split('@')[0]
       console.log('image', image)
   
-      // const auth = config.registryAuth ? {
-      //   username: config.registryAuth.split(':')[0],
-      //   password: config.registryAuth.split(':')[1]
-      // } : {} as any
-      const auth = config.registryAuth
+      const auth = config.registryAuth ? {
+        username: config.registryAuth.split(':')[0],
+        password: config.registryAuth.split(':')[1]
+      } : {} as any
   
       const debugProgress = (e: any) => console.log(e)
   
       DockerInterface.client.pull(image, {
-        authconfig: {
-          auth
-        },
-        registryconfig: {
-          auth
-        }
+        authconfig: auth
       }, (err, stream) => {
         if (err) console.error(err)
         else DockerInterface.client.modem.followProgress(stream, dat => DockerInterface.updatePullFinished(dat, item), debugProgress)
