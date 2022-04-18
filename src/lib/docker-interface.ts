@@ -89,6 +89,7 @@ export default class DockerInterface {
       // wait for container to stop fully
       await new Promise((res) => setTimeout(res, 4000))
 
+      console.log('aaaaa')
       console.log({
         ...item.Spec,
         TaskTemplate: {
