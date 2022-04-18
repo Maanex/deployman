@@ -33,9 +33,14 @@ export default class DockerInterface {
       return
     }
 
-    const item = list[0]
+    const item = list.find(i => i.Spec.Name === name)
+    if (!item) {
+      console.error(`Task update container '${name}' failed. No such container found.`)
+      return
+    }
+
     const itemId = item.ID
-    const image = (item.Spec.TaskTemplate as any).ContainerSpec.Image
+    // const image = (item.Spec.TaskTemplate as any).ContainerSpec.Image
 
     const auth = config.registryAuth ? {
       username: config.registryAuth.split(':')[0],
@@ -50,7 +55,7 @@ export default class DockerInterface {
     await DockerInterface.client.getService(itemId).remove()
 
     await DockerInterface.client.createService({
-      ...item,
+      ...item.Spec,
       authconfig: auth,
       // @ts-ignore
       registryconfig: auth
