@@ -42,14 +42,18 @@ export default class DockerInterface {
     const itemId = item.ID
     const image = (item.Spec.TaskTemplate as any).ContainerSpec.Image
 
-    const auth = config.registryAuth ? {
-      username: config.registryAuth.split(':')[0],
-      password: config.registryAuth.split(':')[1]
-    } : {} as any
+    // const auth = config.registryAuth ? {
+    //   username: config.registryAuth.split(':')[0],
+    //   password: config.registryAuth.split(':')[1]
+    // } : {} as any
+    const auth = config.registryAuth
 
     const debug = await DockerInterface.client.pull(image, {
-      registryconfig: auth,
-      authconfig: auth
+      // registryconfig: auth,
+      // authconfig: auth
+      authconfig: {
+        key: auth
+      }
     })
     console.log(debug)
 
@@ -57,9 +61,9 @@ export default class DockerInterface {
 
     await DockerInterface.client.createService({
       ...item.Spec,
-      authconfig: auth,
-      // @ts-ignore
-      registryconfig: auth
+      // authconfig: auth,
+      // // @ts-ignore
+      // registryconfig: auth
     })
   }
 
