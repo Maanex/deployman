@@ -71,7 +71,6 @@ export default class GithubEvents {
     }
 
     const overrides = Rules.getOverrideForRule(candidate)
-    console.log(event.action, overrides)
     try {
       GithubEvents.actOnEvent(event, overrides)
     } catch (ex) {

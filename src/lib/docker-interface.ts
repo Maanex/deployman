@@ -49,7 +49,7 @@ export default class DockerInterface {
     }
 
     const itemId = item.ID
-    const image = (item.Spec.TaskTemplate as any).ContainerSpec.Image
+    const image = (item.Spec.TaskTemplate as any).ContainerSpec.Image.split('@')[0]
 
     // const auth = config.registryAuth ? {
     //   username: config.registryAuth.split(':')[0],
