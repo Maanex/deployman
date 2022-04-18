@@ -11,8 +11,6 @@ export default class PackageWidget {
     if (!name) return
 
     const payload = PackageWidget.buildWidget(event, deployService)
-    console.log(JSON.stringify(event))
-    console.log(JSON.stringify(payload, null, 2))
     Webhooks.sendDataToChannel(channel, payload)
   }
 

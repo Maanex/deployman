@@ -47,10 +47,11 @@ export default class DockerInterface {
       password: config.registryAuth.split(':')[1]
     } : {} as any
 
-    await DockerInterface.client.pull(image, {
+    const debug = await DockerInterface.client.pull(image, {
       registryconfig: auth,
       authconfig: auth
     })
+    console.log(debug)
 
     await DockerInterface.client.getService(itemId).remove()
 
