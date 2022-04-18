@@ -32,72 +32,79 @@ export default class DockerInterface {
   }
 
   private static async unsafeUpdateContainerByName(name: string) {
-    const list = await DockerInterface.client.listServices({
-      Filters: {
-        name: [ name ]
+    try {
+      const list = await DockerInterface.client.listServices({
+        Filters: {
+          name: [ name ]
+        }
+      })
+      if (!list.length) {
+        console.error(`Task update container '${name}' failed. No such container found.`)
+        return
       }
-    })
-    if (!list.length) {
-      console.error(`Task update container '${name}' failed. No such container found.`)
-      return
-    }
-
-    const item = list.find(i => i.Spec.Name === name)
-    if (!item) {
-      console.error(`Task update container '${name}' failed. No such container found.`)
-      return
-    }
-
-    const image = (item.Spec.TaskTemplate as any).ContainerSpec.Image.split('@')[0]
-    console.log('image', image)
-
-    // const auth = config.registryAuth ? {
-    //   username: config.registryAuth.split(':')[0],
-    //   password: config.registryAuth.split(':')[1]
-    // } : {} as any
-    const auth = config.registryAuth
-    console.log('auth', auth)
-
-    const debugProgress = (e: any) => console.log(e)
-
-    const debug = await DockerInterface.client.pull(image, {
-      authconfig: {
-        key: auth
-      },
-      registryconfig: {
-        key: auth
+  
+      const item = list.find(i => i.Spec.Name === name)
+      if (!item) {
+        console.error(`Task update container '${name}' failed. No such container found.`)
+        return
       }
-    }, (err, stream) => {
-      DockerInterface.client.modem.followProgress(stream, dat => DockerInterface.updatePullFinished(dat, item), debugProgress)
-    })
-    console.log(debug)
-    // const debug = await DockerInterface.client.pull(image, {
-    //   // registryconfig: auth,
-    //   // authconfig: auth
-    //   authconfig: {
-    //     key: auth
-    //   }
-    // })
-    // console.log(debug)
+  
+      const image = (item.Spec.TaskTemplate as any).ContainerSpec.Image.split('@')[0]
+      console.log('image', image)
+  
+      // const auth = config.registryAuth ? {
+      //   username: config.registryAuth.split(':')[0],
+      //   password: config.registryAuth.split(':')[1]
+      // } : {} as any
+      const auth = config.registryAuth
+      console.log('auth', auth)
+  
+      const debugProgress = (e: any) => console.log(e)
+  
+      DockerInterface.client.pull(image, {
+        authconfig: {
+          key: auth
+        },
+        registryconfig: {
+          key: auth
+        }
+      }, (err, stream) => {
+        DockerInterface.client.modem.followProgress(stream, dat => DockerInterface.updatePullFinished(dat, item), debugProgress)
+      })
+      // const debug = await DockerInterface.client.pull(image, {
+      //   // registryconfig: auth,
+      //   // authconfig: auth
+      //   authconfig: {
+      //     key: auth
+      //   }
+      // })
+      // console.log(debug)
+    } catch (ex) {
+      throw ex
+    }
   }
 
   private static async updatePullFinished(data: any, item: any) {
-    console.log('data')
-    console.log(data)
-    console.log('data')
+    try {
+      console.log('data')
+      console.log(data)
+      console.log('data')
 
-    await DockerInterface.client.getService(item.ID).remove()
+      await DockerInterface.client.getService(item.ID).remove()
 
-    // wait for container to stop fully
-    await new Promise((res) => setTimeout(res, 8000))
+      // wait for container to stop fully
+      await new Promise((res) => setTimeout(res, 8000))
 
-    await DockerInterface.client.createService({
-      ...item.Spec,
-      // authconfig: auth,
-      // // @ts-ignore
-      // registryconfig: auth
-    })
-    console.log('deploy done')
+      await DockerInterface.client.createService({
+        ...item.Spec,
+        // authconfig: auth,
+        // // @ts-ignore
+        // registryconfig: auth
+      })
+      console.log('deploy done')
+    } catch (ex) {
+      throw ex
+    }
   }
 
 }
