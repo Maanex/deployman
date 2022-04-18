@@ -48,9 +48,11 @@ export default class DockerInterface {
         console.error(`Task update container '${name}' failed. No such container found.`)
         return
       }
+
+      console.log('item')
+      console.log(item)
   
       const image = (item.Spec.TaskTemplate as any).ContainerSpec.Image.split('@')[0]
-      console.log('image', image)
   
       const auth = config.registryAuth ? {
         username: config.registryAuth.split(':')[0],
@@ -105,7 +107,8 @@ export default class DockerInterface {
           ContainerSpec: {
             Image: item.Spec.TaskTemplate.ContainerSpec.Image.split('@')[0]
           }
-        }
+        },
+        Networks: item
         // authconfig: auth,
         // // @ts-ignore
         // registryconfig: auth
