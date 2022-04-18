@@ -87,10 +87,24 @@ export default class DockerInterface {
       await DockerInterface.client.getService(item.ID).remove()
 
       // wait for container to stop fully
-      await new Promise((res) => setTimeout(res, 8000))
+      await new Promise((res) => setTimeout(res, 4000))
+
+      console.log({
+        ...item.Spec,
+        TaskTemplate: {
+          ContainerSpec: {
+            Image: item.Spec.TaskTemplate.ContainerSpec.Image.split('@')[0]
+          }
+        }
+      })
 
       await DockerInterface.client.createService({
         ...item.Spec,
+        TaskTemplate: {
+          ContainerSpec: {
+            Image: item.Spec.TaskTemplate.ContainerSpec.Image.split('@')[0]
+          }
+        }
         // authconfig: auth,
         // // @ts-ignore
         // registryconfig: auth
