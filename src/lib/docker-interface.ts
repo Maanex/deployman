@@ -48,16 +48,28 @@ export default class DockerInterface {
     // } : {} as any
     const auth = config.registryAuth
 
-    const debug = await DockerInterface.client.pull(image, {
-      // registryconfig: auth,
-      // authconfig: auth
-      authconfig: {
-        key: auth
-      }
+    const debugProgress = (e: any) => console.log(e)
+
+    const debug = await DockerInterface.client.pull(image, (err, stream) => {
+      DockerInterface.client.modem.followProgress(stream, DockerInterface.updatePullFinished, debugProgress)
     })
     console.log(debug)
+    // const debug = await DockerInterface.client.pull(image, {
+    //   // registryconfig: auth,
+    //   // authconfig: auth
+    //   authconfig: {
+    //     key: auth
+    //   }
+    // })
+    // console.log(debug)
+  }
 
-    await DockerInterface.client.getService(itemId).remove()
+  private static async updatePullFinished(data: any, item: any) {
+    console.log('data')
+    console.log(data)
+    console.log('data')
+
+    await DockerInterface.client.getService(item.ID).remove()
 
     await DockerInterface.client.createService({
       ...item.Spec,
