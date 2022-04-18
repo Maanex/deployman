@@ -53,7 +53,7 @@ export default class Webhooks {
       throw new Error('Max number of Webhooks reached!')
 
     if (res.status >= 400 && res.status < 500)
-      return null
+      throw new Error(res.status + ' ' + res.statusText + ' ' + JSON.stringify(res.data))
 
     if (res.status >= 200 && res.status < 300)
       return res.data

@@ -96,6 +96,7 @@ export default class DockerInterface {
       // // @ts-ignore
       // registryconfig: auth
     })
+    console.log('deploy done')
   }
 
 }
