@@ -1,3 +1,5 @@
+const fs = require('fs')
+
 let devConfig
 try { devConfig = require('./devconf') } catch (_) {}
 

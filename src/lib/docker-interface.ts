@@ -56,15 +56,20 @@ export default class DockerInterface {
     //   password: config.registryAuth.split(':')[1]
     // } : {} as any
     const auth = config.registryAuth
-    console.log('config', config)
     console.log('auth', auth)
 
     const debugProgress = (e: any) => console.log(e)
 
-    const debug = await DockerInterface.client.pull(image, (err, stream) => {
+    const debug = await DockerInterface.client.pull(image, {
+      authconfig: {
+        key: auth
+      },
+      registryconfig: {
+        key: auth
+      }
+    }, (err, stream) => {
       DockerInterface.client.modem.followProgress(stream, dat => DockerInterface.updatePullFinished(dat, item), debugProgress)
-      // @ts-ignore
-    }, { key: auth })
+    })
     console.log(debug)
     // const debug = await DockerInterface.client.pull(image, {
     //   // registryconfig: auth,
