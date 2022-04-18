@@ -59,7 +59,14 @@ export default class DockerInterface {
 
     const debugProgress = (e: any) => console.log(e)
 
-    const debug = await DockerInterface.client.pull(image, (err, stream) => {
+    const debug = await DockerInterface.client.pull(image, {
+      authconfig: {
+        key: auth
+      },
+      registryconfig: {
+        key: auth
+      }
+    }, (err, stream) => {
       DockerInterface.client.modem.followProgress(stream, dat => DockerInterface.updatePullFinished(dat, item), debugProgress)
     })
     console.log(debug)
@@ -73,14 +80,18 @@ export default class DockerInterface {
     // console.log(debug)
   }
 
-  private static async updatePullFinished(data: any, item: any) {
+  private static updatePullFinished(data: any, item: any) {
     console.log('data')
     console.log(data)
     console.log('data')
 
-    await DockerInterface.client.getService(item.ID).remove()
+    DockerInterface.client.getService(item.ID).remove((err, stream) => {
+      DockerInterface.client.modem.followProgress(stream, dat => DockerInterface.serviceKillComplete(dat, item), () => {})
+    })
+  }
 
-    await DockerInterface.client.createService({
+  private static serviceKillComplete(data: any, item: any) {
+    DockerInterface.client.createService({
       ...item.Spec,
       // authconfig: auth,
       // // @ts-ignore
