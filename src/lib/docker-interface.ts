@@ -62,10 +62,10 @@ export default class DockerInterface {
   
       DockerInterface.client.pull(image, {
         authconfig: {
-          key: auth
+          key: Buffer.from(JSON.stringify({ auth }), 'utf8').toString('base64')
         },
         registryconfig: {
-          key: auth
+          key: Buffer.from(JSON.stringify({ auth }), 'utf8').toString('base64')
         }
       }, (err, stream) => {
         if (err) console.error(err)
