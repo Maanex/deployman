@@ -23,6 +23,15 @@ export default class DockerInterface {
   }
 
   public static async updateContainerByName(name: string) {
+    try {
+      this.unsafeUpdateContainerByName(name)
+    } catch (ex) {
+      console.error('updateContainerByName failed fatal')
+      console.error(ex)
+    }
+  }
+
+  private static async unsafeUpdateContainerByName(name: string) {
     const list = await DockerInterface.client.listServices({
       Filters: {
         name: [ name ]
@@ -51,7 +60,7 @@ export default class DockerInterface {
     const debugProgress = (e: any) => console.log(e)
 
     const debug = await DockerInterface.client.pull(image, (err, stream) => {
-      DockerInterface.client.modem.followProgress(stream, DockerInterface.updatePullFinished, debugProgress)
+      DockerInterface.client.modem.followProgress(stream, dat => DockerInterface.updatePullFinished(dat, item), debugProgress)
     })
     console.log(debug)
     // const debug = await DockerInterface.client.pull(image, {
