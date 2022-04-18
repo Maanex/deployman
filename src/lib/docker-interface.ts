@@ -80,18 +80,17 @@ export default class DockerInterface {
     // console.log(debug)
   }
 
-  private static updatePullFinished(data: any, item: any) {
+  private static async updatePullFinished(data: any, item: any) {
     console.log('data')
     console.log(data)
     console.log('data')
 
-    DockerInterface.client.getService(item.ID).remove((err, stream) => {
-      DockerInterface.client.modem.followProgress(stream, dat => DockerInterface.serviceKillComplete(dat, item), () => {})
-    })
-  }
+    await DockerInterface.client.getService(item.ID).remove()
 
-  private static serviceKillComplete(data: any, item: any) {
-    DockerInterface.client.createService({
+    // wait for container to stop fully
+    await new Promise((res) => setTimeout(res, 8000))
+
+    await DockerInterface.client.createService({
       ...item.Spec,
       // authconfig: auth,
       // // @ts-ignore
