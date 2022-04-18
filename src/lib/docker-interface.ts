@@ -48,14 +48,15 @@ export default class DockerInterface {
       return
     }
 
-    const itemId = item.ID
     const image = (item.Spec.TaskTemplate as any).ContainerSpec.Image.split('@')[0]
+    console.log('image', image)
 
     // const auth = config.registryAuth ? {
     //   username: config.registryAuth.split(':')[0],
     //   password: config.registryAuth.split(':')[1]
     // } : {} as any
     const auth = config.registryAuth
+    console.log('auth', auth)
 
     const debugProgress = (e: any) => console.log(e)
 

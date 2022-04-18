@@ -65,6 +65,7 @@ export default class Webhooks {
   }
 
   private static makeRequest(method: 'GET' | 'POST' | 'PATCH', url: string, payload?: any): Promise<AxiosResponse> {
+    console.log('webhook', `Bot ${config.discordBotToken}`)
     return axios({
       method,
       url,
