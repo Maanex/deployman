@@ -88,7 +88,7 @@ export default class DockerInterface {
 
       await DockerInterface.client.getService(item.ID).update({
         ...item.Spec,
-        version: ~~(Date.now() / 1000),
+        version: item.Version.Index,
         UpdateConfig: {
           Parallelism: 1,
           Delay: 5000000000 // 5s
