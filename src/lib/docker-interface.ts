@@ -87,10 +87,16 @@ export default class DockerInterface {
       console.log('data')
 
       await DockerInterface.client.getService(item.ID).update({
+        ...item.Spec,
         version: ~~(Date.now() / 1000),
         UpdateConfig: {
           Parallelism: 1,
           Delay: 5000000000 // 5s
+        },
+        TaskTemplate: {
+          ContainerSpec: {
+            Image: item.Spec.TaskTemplate.ContainerSpec.Image.split('@')[0]
+          }
         }
       })
 
