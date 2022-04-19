@@ -86,37 +86,44 @@ export default class DockerInterface {
       console.log(data)
       console.log('data')
 
-      await DockerInterface.client.getService(item.ID).remove()
-
-      // wait for container to stop fully
-      await new Promise((res) => setTimeout(res, 4000))
-
-      console.log('aaaaa')
-      console.log({
-        ...item.Spec,
-        TaskTemplate: {
-          ContainerSpec: {
-            Image: item.Spec.TaskTemplate.ContainerSpec.Image.split('@')[0]
-          }
+      await DockerInterface.client.getService(item.ID).update({
+        UpdateConfig: {
+          Parallelism: 1,
+          Delay: 5000000000 // 5s
         }
       })
 
-      await DockerInterface.client.createService({
-        ...item.Spec,
-        TaskTemplate: {
-          ContainerSpec: {
-            Image: item.Spec.TaskTemplate.ContainerSpec.Image.split('@')[0]
-          }
-        },
-        Networks: item
-        // authconfig: auth,
-        // // @ts-ignore
-        // registryconfig: auth
-      })
-      console.log('deploy done')
-    } catch (ex) {
-      throw ex
-    }
+    //   await DockerInterface.client.getService(item.ID).remove()
+
+    //   // wait for container to stop fully
+    //   await new Promise((res) => setTimeout(res, 4000))
+
+    //   console.log('aaaaa')
+    //   console.log({
+    //     ...item.Spec,
+    //     TaskTemplate: {
+    //       ContainerSpec: {
+    //         Image: item.Spec.TaskTemplate.ContainerSpec.Image.split('@')[0]
+    //       }
+    //     }
+    //   })
+
+    //   await DockerInterface.client.createService({
+    //     ...item.Spec,
+    //     TaskTemplate: {
+    //       ContainerSpec: {
+    //         Image: item.Spec.TaskTemplate.ContainerSpec.Image.split('@')[0]
+    //       }
+    //     },
+    //     Networks: item
+    //     // authconfig: auth,
+    //     // // @ts-ignore
+    //     // registryconfig: auth
+    //   })
+    //   console.log('deploy done')
+    // } catch (ex) {
+    //   throw ex
+    // }
   }
 
 }
