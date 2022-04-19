@@ -121,9 +121,9 @@ export default class DockerInterface {
     //     // registryconfig: auth
     //   })
     //   console.log('deploy done')
-    // } catch (ex) {
-    //   throw ex
-    // }
+    } catch (ex) {
+      throw ex
+    }
   }
 
 }
